@@ -5,8 +5,9 @@ import unittest
 import zipfile
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
-from packlint import AuditInputError, AuditPolicy, Finding
+from packlint import AuditInputError, AuditPolicy, AuditReport, Finding
 from packlint.audit import format_findings
 from packlint.cli import main
 
@@ -58,16 +59,22 @@ class CliTests(unittest.TestCase):
         self.assertNotIn("\n", line)
 
     def test_human_output_escapes_archive_control_characters(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            archive = Path(temp_dir) / "line\nbreak.zip"
-            with zipfile.ZipFile(archive, "w") as handle:
-                handle.writestr("file.txt", "content")
-            output = io.StringIO()
+        report = AuditReport(
+            archive="line\nbreak.zip",
+            format="zip",
+            archive_size=1,
+            entry_count=1,
+            total_uncompressed=1,
+            scan_complete=True,
+            findings=(),
+        )
+        output = io.StringIO()
+        with patch("packlint.cli.scan_archive", return_value=report):
             with redirect_stdout(output):
-                code = main(["scan", str(archive)])
-            self.assertEqual(code, 0)
-            self.assertIn(r"line\nbreak.zip", output.getvalue())
-            self.assertEqual(output.getvalue().count("\n"), 1)
+                code = main(["scan", "placeholder.zip"])
+        self.assertEqual(code, 0)
+        self.assertIn(r"line\nbreak.zip", output.getvalue())
+        self.assertEqual(output.getvalue().count("\n"), 1)
 
 
 if __name__ == "__main__":
