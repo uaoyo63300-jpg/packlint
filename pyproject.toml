@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "packlint"
+version = "0.1.0"
+description = "A zero-runtime-dependency linter for unsafe ZIP and TAR archive metadata."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+  { name = "uaoyo63300-jpg" }
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Security",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: System :: Archiving",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/uaoyo63300-jpg/packlint"
+Issues = "https://github.com/uaoyo63300-jpg/packlint/issues"
+
+[project.scripts]
+packlint = "packlint.cli:entrypoint"
+
+[tool.setuptools.packages.find]
+where = ["src"]
